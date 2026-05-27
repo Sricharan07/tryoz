@@ -1,0 +1,31 @@
+{
+  "name": "tryoz",
+  "version": "0.1.0",
+  "description": "One-line Oz MCP setup for coding agents.",
+  "license": "MIT",
+  "author": "Oz",
+  "bin": {
+    "tryoz": "./bin/tryoz.js",
+    "oz": "./bin/tryoz.js"
+  },
+  "files": [
+    "bin",
+    "lib",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sricharan07/tryoz.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Sricharan07/tryoz/issues"
+  },
+  "homepage": "https://tryoz.dev"
+}
