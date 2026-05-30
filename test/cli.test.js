@@ -7,7 +7,7 @@ const os = require("node:os");
 const path = require("node:path");
 const test = require("node:test");
 const { fallbackHint, formatSelectedClients, hasExplicitClients, parseArgs, selectedClients, validateAPIKey, validateConfigTarget } = require("../lib/cli");
-const { removeClients, setupClients } = require("../lib/clients");
+const { detectClientDetails, detectClients, removeClients, setupClients } = require("../lib/clients");
 
 function withTempDirs(fn) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "tryoz-test-"));
@@ -84,26 +84,41 @@ test("selectedClients maps dashed flags back to client IDs", () => {
   assert.deepEqual(clients, ["copilot-agent"]);
 });
 
-test("setup defaults to all clients when no target flag is provided", () => {
-  const clients = selectedClients({}, {}, { defaultAll: true });
-  assert.deepEqual(clients, [
-    "codex",
-    "claude",
-    "cursor",
-    "vscode",
-    "cline",
-    "windsurf",
-    "opencode",
-    "copilot",
-    "copilot-agent",
-    "grok",
-    "gemini"
-  ]);
+test("setup defaults to auto-selected detected clients when no target flag is provided", () => {
+  const clients = selectedClients({}, {
+    codex: { selected: true },
+    claude: { selected: false },
+    cursor: { selected: true }
+  });
+  assert.deepEqual(clients, ["codex", "cursor"]);
 });
 
-test("explicit setup target overrides default all", () => {
-  const clients = selectedClients({ claude: true }, {}, { defaultAll: true });
+test("explicit setup target overrides auto detection", () => {
+  const clients = selectedClients({ claude: true }, { codex: { selected: true } });
   assert.deepEqual(clients, ["claude"]);
+});
+
+test("client detection distinguishes cli/project signals from config-only signals", () => {
+  withTempDirs(({ home, cwd }) => {
+    fs.mkdirSync(path.join(home, ".codex"), { recursive: true });
+    fs.mkdirSync(path.join(cwd, ".github"), { recursive: true });
+
+    const details = detectClientDetails(cwd);
+    assert.equal(details.codex.available, true);
+    assert.equal(details.codex.selected, false);
+    assert.equal(details.codex.source, "config");
+    assert.equal(details.codex.label, "config found");
+    assert.equal(details["copilot-agent"].available, true);
+    assert.equal(details["copilot-agent"].selected, true);
+    assert.equal(details["copilot-agent"].source, "project");
+    assert.equal(details["copilot-agent"].label, "project config");
+    assert.equal(details.claude.available, false);
+    assert.equal(details.claude.selected, false);
+
+    const detected = detectClients();
+    assert.equal(detected.codex, false);
+    assert.equal(detected["copilot-agent"], true);
+  });
 });
 
 test("hasExplicitClients recognizes dashed flags", () => {

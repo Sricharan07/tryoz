@@ -19,7 +19,8 @@ npx tryoz --version
 npx tryoz setup [targets] [scope] [options]
 ```
 
-When no target flags are provided, setup selects all supported agents by default.
+When no target flags are provided, setup selects detected agents by default. Use
+`--all` to configure every supported agent.
 
 Targets:
 

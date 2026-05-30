@@ -49,7 +49,7 @@ Agent: answers from retrieved docs instead of guessing.
 The setup wizard:
 
 1. Detects installed coding agents.
-2. Shows a checkbox list with all supported agents selected by default.
+2. Shows a checkbox list with detected agents selected by default.
 3. Asks for scope: Global (recommended) or Project.
 4. Asks for an Oz API key. Keys must start with `oz-`.
 5. Shows the exact files and commands that will change.
@@ -57,7 +57,7 @@ The setup wizard:
 7. Installs the Oz skill or the best available rule fallback.
 8. Verifies the MCP server with `tools/list`.
 
-No login flow. No broad hidden patching. Deselect any agents you do not want to change.
+No login flow. No broad hidden patching. Use `--all` when you want to configure every supported agent.
 
 ## Supported Agents
 
